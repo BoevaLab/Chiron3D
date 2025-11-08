@@ -1,7 +1,4 @@
-# Semester Project HS 2024
-## Project Title 
-
-Analysis of Chromatin Loop Structures in Ewing Sarcoma Using Deep Learning
+# Chiron3D: an interpretable deep learning framework for understanding the DNA code of chromatin looping
 
 ## Abstract
 
