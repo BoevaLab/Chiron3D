@@ -1,5 +1,35 @@
 # Chiron3D: an interpretable deep learning framework for understanding the DNA code of chromatin looping
 
-## Abstract
+Chiron3D is a DNA-only deep learning model that predicts cell-type–specific CTCF HiChIP contact maps from 524,288 bp genomic windows. The model uses a frozen Borzoi backbone with lightweight adapters and a C.Origami-style pairwise head to output 105 × 105 contact matrices at 5 kb resolution.
 
-Three-dimensional folding of the genome into structures such as chromatin loops is essential for gene regulation. Current experimental methods for mapping these structures like Hi-C and HiChIP are labor-intensive and require repeated assays to test hypothesized mutation effects. This motivates the need for predictive approaches that reveal the sequence determinants of chromatin loops. In this work, we present a novel and interpretable computational pipeline for predicting CTCF-mediated chromatin loops. We propose Chiron3D, a DNA-only model trained in a cell-type specific manner to predict CTCF HiChIP contact maps. By leveraging pre-trained embeddings from a foundation model, our approach is competitive with baselines that take CTCF ChIP-seq as additional input, while enabling nucleotide-level attribution to the input DNA sequence. Using our framework, we provide likely mechanistic insights into the physical control of loop dynamics. Specifically, we find that the loop extrusion anchorage site strength is largely governed by the amount and the binding affinity of CTCF sites at the boundaries. Furthermore, we reveal that loop stability is regulated by the amount of intra-loop CTCF binding sites, where fewer sites within the loop lead to a more stable domain. Using targeted, single-nucleotide edit simulations with Chiron3D, we show that both loop strength and stability can be precisely controlled. Together, these results provide novel mechanistic insights into the physical control of genome organization and highlight the potential of decoding the DNA sequence logic n silico. The pipeline is made available at https://github.com/BoevaLab/Chiron3D.
+This repository currently focuses on:
+
+- Training Chiron3D on the A673 CTCF HiChIP dataset
+
+- Evaluating trained checkpoints and reproducing the main quantitative and qualitative results from the figures
+
+
+## Data
+
+Chiron3D is trained on CTCF HiChIP and matched CTCF ChIP-seq from the A673 wild-type Ewing sarcoma cell line on the hg19 reference genome.
+
+All preprocessed inputs required to run the scripts in this repository will be made available via Zenodo:
+
+TODO: add Zenodo DOI / URL here once uploaded.
+
+### Expected directory layout
+
+After downloading and unpacking the Zenodo archive, the repository expects:
+
+```
+data/
+  A673_WT_CTCF_5000.cool      # 5 kb binned CTCF HiChIP contact map (hg19)
+  windows_hg19.bed            # 524,288 bp windows tiled with 50 kb stride
+  chromosomes/                # hg19 FASTA files per chromosome (e.g. chr1.fa, ...)
+  ctcf/                       # CTCF feature tracks (ChIP-seq)
+  chiron-model.ckpt           # pretrained checkpoint for evaluation only
+```
+
+## Training and evaluation
+
+There are two slurm scripts provided in the `scripts` directory: `model-evaluation.sh` and `model-training.sh`. For training, Chiron3D requires 4 × NVIDIA RTX 4090 or 3090 with 24GB of memory. Training takes about 20 hours. For evaluation, 1 × NVIDIA RTX 4090 or 3090 with 24GB finishes in 30 minutes.
