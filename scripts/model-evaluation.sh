@@ -21,7 +21,7 @@ GENOME_FEAT_PATH="../../data/ctcf"
 FASTA_DIR_HG19="../../data/chromosomes"
 CKPT_PATH="../../data/chiron-model.ckpt" 
 
-python3 eval_aayush_wish.py \
+python3 evaluation.py \
   --regions-file $REGIONS_FILE \
   --fasta-dir $FASTA_DIR_HG19 \
   --cool-file $COOL_FILE \
