@@ -49,7 +49,7 @@ def onehotencode_dna(sequence, channels=4):
     sequence = sequence.lower()
     numeric_sequence = [char_to_num[char] for char in sequence]
 
-    # Enformer, Borzoi take 4 channels, while original C.Origami uses 5
+    # Borzoi takes 4 channels, while original C.Origami uses 5
     if channels == 4:
         one_hot_matrix = seq_indices_to_one_hot(torch.tensor(numeric_sequence)) 
         return einops.rearrange(one_hot_matrix, "l c -> c l")

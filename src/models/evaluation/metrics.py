@@ -1,51 +1,80 @@
 import numpy as np
 from scipy.stats import pearsonr, spearmanr
+import torch
 
+def _to_np(x):
+    if torch.is_tensor(x):
+        return x.detach().cpu().numpy()
+    return np.asarray(x)
 
-def mse(preds, targets):
-    preds = preds.unsqueeze(0)
-    targets = targets.unsqueeze(0)
-    mse_ = ((preds - targets) ** 2).mean(axis=(1, 2))
-    results = list(mse_)
-    return results
-
+def mse(pred, target):
+    pred = _to_np(pred)
+    target = _to_np(target)
+    return float(np.mean((pred - target) ** 2))
 
 def point_score(locus, radius, matrix, pseudocount):
+    n = matrix.shape[0]
     l_edge = max(locus - radius, 0)
-    r_edge = min(locus + radius, len(matrix))
-    l_mask = matrix[l_edge : locus, l_edge : locus]
-    r_mask = matrix[locus : r_edge, locus : r_edge]
-    center_mask = matrix[l_edge : locus, locus : r_edge]
-    score = (max(l_mask.mean(), r_mask.mean()) +  pseudocount) /\
-            (center_mask.mean() + pseudocount)
-    return score
+    r_edge = min(locus + radius, n)
 
+    L = matrix[l_edge:locus, l_edge:locus]
+    R = matrix[locus:r_edge, locus:r_edge]
+    C = matrix[l_edge:locus, locus:r_edge]
 
-def chr_score(matrix, res=5000, radius=125000, pseudocount_coeff=30, pseudocount=None):
-    pseudocount = matrix.mean() * pseudocount_coeff
-    pixel_radius = int(radius / res)
-    scores = []
-    for loc_i, loc in enumerate(range(len(matrix))):
-        scores.append(point_score(loc, pixel_radius, matrix, pseudocount))
-    return scores
+    if C.size == 0:
+        return np.nan
 
+    Lm = np.mean(L) if L.size else np.nan
+    Rm = np.mean(R) if R.size else np.nan
+    Cm = np.mean(C)  
 
-def insulation_corr(preds, targets):
-    scores_pearson = []
-    scores_spearman = []
-    preds = preds.unsqueeze(0)
-    targets= targets.unsqueeze(0)
-    for pred, target in zip(preds, targets):
-        c = float(target.mean()) * 30
-        pred_insu = np.array(chr_score(pred, pseudocount=c))
-        label_insu = np.array(chr_score(target, pseudocount=c))
-        nas = np.logical_or(np.isnan(pred_insu), np.isnan(label_insu))
-        if nas.sum() == len(pred):
-            scores_pearson.append(np.nan)
-            scores_spearman.append(np.nan)
+    num = np.nanmax([Lm, Rm]) + pseudocount
+    den = Cm + pseudocount
+
+    if not np.isfinite(den) or den == 0.0:
+        return np.nan
+    if not np.isfinite(num):
+        return np.nan
+
+    return num / den
+
+def chr_score(matrix, res=5000, radius=125000, pseudocount_coeff=30):
+    mat = _to_np(matrix).astype(np.float64, copy=False)
+    pseudocount = float(mat.mean()) * pseudocount_coeff
+    pix = int(radius / res)
+    return [point_score(loc, pix, mat, pseudocount) for loc in range(mat.shape[0])]
+
+def insulation_corr(pred, target):
+    pred_insu  = np.asarray(chr_score(pred), dtype=np.float64)
+    targ_insu  = np.asarray(chr_score(target), dtype=np.float64)
+    m = np.isfinite(pred_insu) & np.isfinite(targ_insu)
+
+    if m.sum() < 2:   
+        return np.nan, np.nan, np.nan, np.nan
+
+    rp, _ = pearsonr(pred_insu[m], targ_insu[m])
+    rs, _ = spearmanr(pred_insu[m], targ_insu[m])
+    return float(rp), float(rs), pred_insu[m], targ_insu[m]
+
+def distance_stratified_correlation(pred, target, xs, ys):
+    pears, spears = [], []
+    for d in range(len(pred)):
+        x = np.diagonal(pred, offset=d)
+        y = np.diagonal(target, offset=d)
+        
+        if x.size < 2:
+            continue
+        if d in xs:
+            xs[d].extend(list(x))
         else:
-            metric_pearson, p_val = pearsonr(pred_insu[~nas], label_insu[~nas])
-            scores_pearson.append(metric_pearson)
-            metric_spearman, p_val = spearmanr(pred_insu[~nas], label_insu[~nas])
-            scores_spearman.append(metric_spearman)
-    return scores_pearson, scores_spearman
+            xs[d] = list(x)
+        
+        if d in ys:
+            ys[d].extend(list(y))
+        else:
+            ys[d] = list(y)
+        rp, _ = pearsonr(x, y)
+        rs, _ = spearmanr(x, y)
+        pears.append(float(rp))
+        spears.append(float(rs))
+    return pears, spears, xs, ys

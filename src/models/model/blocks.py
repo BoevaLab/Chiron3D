@@ -1,4 +1,4 @@
-# Code taken from https://github.com/tanjimin/C.Origami/
+# Code adapted from https://github.com/tanjimin/C.Origami/
 import torch
 import torch.nn as nn
 import numpy as np

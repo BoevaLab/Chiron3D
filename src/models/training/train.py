@@ -25,8 +25,6 @@ def init_parser():
                         help='Path to the genomic feature file (default: None)')
 
     # Model parameters
-    parser.add_argument('--model-type', dest='model_type', default='ConvTransModelSmall',
-                        help='CNN with Transformer Small (Adapted)')
     parser.add_argument('--num-genom-feat', dest='num_genom_feat', type=int, default=0,
                         help='Number of genomic features to consider (default: 0)')
 
@@ -44,16 +42,10 @@ def init_parser():
                         help='Using ddp, adjust batch size')
     parser.add_argument('--num-workers', dest='dataloader_num_workers', default=16, type=int, help='Dataloader workers')
 
-    # motif flag for 1hot encoding it in input
-    parser.add_argument('--motif', dest='motif', type=str, help='Include motif mask as additional genomic feature')
-
     # If using backbone for embeddings
-    parser.add_argument('--enformer', action='store_true', help='Use enformer backbone for embeddings')
     parser.add_argument('--borzoi', action='store_true', help='Use borzoi backbone for embeddings')
-    parser.add_argument('--flashzoi', action='store_true', help='Use flashzoi backbone for embeddings')
     parser.add_argument('--lora', action='store_true')
 
-    # Model specific params: TODO - add this in config yaml
     parser.add_argument('--use_groupnorm', action='store_true')
 
     args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])

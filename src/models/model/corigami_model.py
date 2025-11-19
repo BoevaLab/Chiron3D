@@ -39,7 +39,7 @@ class ConvModel(nn.Module):
         return input_map
 
 
-# Our adaptation
+# C.Origami adaptation
 class ConvTransModelSmall(ConvModel):
 
     def __init__(self, mid_hidden=128, num_genomic_features=0):

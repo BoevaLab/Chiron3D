@@ -3,32 +3,28 @@
 #SBATCH -p gpu
 #SBATCH --gres=gpu:rtx4090:4
 #SBATCH --job-name=BORZOI
-#SBATCH --output=/cluster/work/boeva/shoenig/ews-ml/training_runs_A673_WT/CHANGES_FULLLORA.output.txt
+#SBATCH --output=training.output.txt
 #SBATCH --cpus-per-task=16
 #SBATCH --time=2-00:00:00
 #SBATCH --mem=64G
 
 if [ $# -eq 0 ]; then
-  echo "Provide a flag name to run the script. Example: sbatch corigami-training.sh --gatc1hot"
+  echo "Provide a flag name to run the script. Example: sbatch model-training.sh --gatc1hot"
   exit 1
 fi
 
 # Activate conda
 source ~/.bashrc
-conda activate ews-ml
+conda activate chiron
 
 # Check env
 echo
 echo "which python"
 which python
 
-
-# Install package
-cd /cluster/work/boeva/shoenig/ews-ml
 pip install -e .
 
 cd src/models/training
-echo "directory 3:"
 pwd
 
 CONFIG_FILE="/cluster/work/boeva/shoenig/ews-ml/config/config.sh"
@@ -39,17 +35,14 @@ FLAG=$(echo "$1" | sed 's/^--//')
 echo "Using flag: $FLAG"
 
 # Save path
-BASE_SAVE_PATH="/cluster/work/boeva/shoenig/ews-ml/training_runs_A673_WT/checkpoints"
-SAVE_PATH="${BASE_SAVE_PATH}/${FLAG}"
-echo "Save path will be: ${SAVE_PATH}"
+SAVE_PATH="checkpoints"
 
-# Data paths
-REGIONS_FILE=$REGIONS_FILE_500KB #$REGIONS_FILE_500KB #$REGIONS_FILE_1MB #REGIONS_FILE_200KB
-COOL_FILE=$COOL_A673_WT 
-GENOME_FEAT_PATH=$GENOM_FEAT_CTCF_A673_WT
+REGIONS_FILE="../../data/windows_hg19.bed"
+COOL_FILE="../../data/A673_WT_CTCF_5000.cool"
+GENOME_FEAT_PATH="../../data/ctcf"
+FASTA_DIR_HG19="../../data/chromosomes"
 
 # Model parameters
-MODEL_TYPE="EnformerBackbone"
 NUM_GENOM_FEAT=0
 
 # Training Parameters
@@ -63,8 +56,6 @@ BATCH_SIZE=4
 DDP_DISABLED="--ddp-disabled"
 NUM_WORKERS=16
 
-CKPT="/cluster/work/boeva/shoenig/ews-ml/training_runs_TC71_WT/checkpoints/Borzoi_FullLora2/models/epoch=7-step=8856.ckpt"
-
 MOTIF=""  # Change this to any motif you want to use, empty string for no extra channel
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
@@ -76,9 +67,7 @@ python3 train.py \
   --fasta-dir $FASTA_DIR_HG19 \
   --cool-file $COOL_FILE \
   --genom-feat-path $GENOME_FEAT_PATH \
-  --model-type $MODEL_TYPE \
   --num-genom-feat $NUM_GENOM_FEAT \
-  --motif "$MOTIF" \
   --patience $PATIENCE \
   --max-epochs $MAX_EPOCHS \
   --save-top-n $SAVE_TOP_N \
@@ -88,4 +77,4 @@ python3 train.py \
   --num-workers $NUM_WORKERS \
   --borzoi \
   --lora \
-  --use_groupnorm \
+  --use_groupnorm

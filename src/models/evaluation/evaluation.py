@@ -1,7 +1,7 @@
 from src.models.dataset.genomic_dataset import GenomicDataset
 from src.models.training.module import TrainModule
-from src.models.model.corigami_models import ConvTransModelSmall
-from src.models.evaluation.metrics_new import mse, insulation_corr, distance_stratified_correlation
+from src.models.model.corigami_model import ConvTransModelSmall
+from src.models.evaluation.metrics import mse, insulation_corr, distance_stratified_correlation
 import torch, numpy as np, argparse, os
 from torch.utils.data import DataLoader
 from tqdm import tqdm
@@ -32,7 +32,7 @@ def _load_weights_into(model, ckpt_path, device):
     sd = _normalize_state_dict_keys(sd, root_prefix_candidates=("model.", "module.", "net.", "backbone."))
     missing, unexpected = model.load_state_dict(sd, strict=False)
     if missing:
-        print(f"[load_weights] Missing keys: {sorted(missing)[:8]}{' ...' if len(missing)>8 else ''}")
+        print(f"[load_weights] Missing keys: {sorted(missing)[:8]}{'...' if len(missing)>8 else ''}")
     if unexpected:
         print(f"[load_weights] Unexpected keys: {sorted(unexpected)[:8]}{' ...' if len(unexpected)>8 else ''}")
     return model
@@ -47,7 +47,6 @@ def init_parser():
     p.add_argument('--ckpt-path', required=True)
     p.add_argument('--borzoi', action='store_true')
     p.add_argument('--out-dir', required=True)
-    p.add_argument('--model-type', type=str, required=True)
     return p.parse_args()
 
 
@@ -66,9 +65,7 @@ def main():
         model = TrainModule.load_from_checkpoint(args.ckpt_path, map_location=device).to(device)
     model.eval()
     use_pretrained_backbone = bool(args.borzoi)
-    clip_105 = not bool(args.borzoi) # clip C.Origami preds for fair comparison
-
-    print(f"Clip 105 is: {clip_105}")
+    corigami_model = not bool(args.borzoi) # clip C.Origami preds for comparison
 
     for chrom in ["chr2", "chr6", "chr19"]:
         ds = GenomicDataset(
@@ -104,7 +101,7 @@ def main():
             for out, true in zip(output, batch["matrix"]):
                 out = out.cpu()  # Move output to CPU
                 true = true.cpu()  # Move true matrix to CPU
-                if clip_105:
+                if corigami_model:
                     true = true[52:157, 52:157]
                     out = out[52:157, 52:157]
 
@@ -126,7 +123,7 @@ def main():
         dist_s_mat = np.asarray(dist_strat_spearman_list, dtype=float)
         
         np.savez_compressed(
-            os.path.join(args.out_dir, f"{args.model_type}_metrics_{chrom}.npz"),
+            os.path.join(f"metrics_{chrom}.npz"),
             insu_pearson=np.asarray(insu_pearson_list, float),
             insu_spearman=np.asarray(insu_spearman_list, float),
             mse=np.asarray(mse_list, float),

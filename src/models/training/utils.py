@@ -1,8 +1,7 @@
 from torch import nn
 from peft import get_peft_model, LoraConfig
-from src.models.model.corigami_models import ConvTransModelSmall
-from src.models.model.borzorogami_models import BorzoiOrogami, BorzoiOrogamiCTCF
-from src.models.model.enformorogami_models import EnformerOrogamiDeep
+from src.models.model.corigami_model import ConvTransModelSmall
+from src.models.model.chiron_model import Chiron3D, BorzoiOrogamiCTCF
 
 
 def replace_bn_with_groupnorm(model):
@@ -45,27 +44,18 @@ def get_learnable_params(model, weight_decay=1e-5):
             high_lr.append(param)
 
     return [
-        {'params': high_lr,   'weight_decay': 1e-5, 'lr': adapter_lr},
-        {'params': no_decay,  'weight_decay': 0, 'lr': adapter_lr},
+        {'params': high_lr, 'weight_decay': 1e-5, 'lr': adapter_lr},
+        {'params': no_decay, 'weight_decay': 0, 'lr': adapter_lr},
     ]
 
 def set_lora(model):
-    full_lora_modules = r"^borzoi\.(?!separable\d+).*conv_layer|^borzoi\..*to_q|^borzoi\..*to_v|^borzoi\.transformer\.\d+\.1\.fn\.1|^borzoi\.transformer\.\d+\.1\.fn\.4"
-    transformer_modules = r"^borzoi\..*to_q|^borzoi\..*to_k|^borzoi\..*to_out|^borzoi\..*to_v|^borzoi\.transformer\.\d+\.1\.fn\.1|^borzoi\.transformer\.\d+\.1\.fn\.4"
-    more_layer_modules = r"^borzoi\..*to_q|^borzoi\..*to_k|^borzoi\..*to_out|^borzoi\..*to_v|^borzoi\.transformer\.\d+\.1\.fn\.1|^borzoi\.transformer\.\d+\.1\.fn\.4|^borzoi\.unet1\..*conv_layer|^borzoi\.horizontal_conv\d+\..*conv_layer|^borzoi\.final_joined_convs\..*conv_layer|^borzoi\.upsampling_unet\d+\..*conv_layer"
-    also_conv_layer_modules = r"^borzoi\..*to_q|^borzoi\..*to_k|^borzoi\..*to_out|^borzoi\..*to_v|^borzoi\.transformer\.\d+\.1\.fn\.1|^borzoi\.transformer\.\d+\.1\.fn\.4|^borzoi\.unet1\..*conv_layer|^borzoi\.horizontal_conv\d+\..*conv_layer|^borzoi\.final_joined_convs\..*conv_layer|^borzoi\.upsampling_unet\d+\..*conv_layer|^borzoi\.res_tower\.[68]\.conv_layer"
-
-    only_linear = r"^borzoi\..*to_[qkv]|^borzoi\..*to_out|^borzoi\.transformer\.\d+\.1\.fn\.[14]|^borzoi\.horizontal_conv\d+\..*conv_layer|^borzoi\.final_joined_convs\..*conv_layer|^borzoi\.upsampling_unet\d+\..*conv_layer|^borzoi\.separable\d+\.conv_layer\.1"
-
-    transformer_modules2 = r"^borzoi\..*to_q|^borzoi\..*to_v|^borzoi\.transformer\.\d+\.1\.fn\.1|^borzoi\.transformer\.\d+\.1\.fn\.4"
-
     lora_config = LoraConfig(
-        target_modules=full_lora_modules#more_layer_modules#full_lora_modules,
+        target_modules=r"^borzoi\.(?!separable\d+).*conv_layer|^borzoi\..*to_q|^borzoi\..*to_v|^borzoi\.transformer\.\d+\.1\.fn\.1|^borzoi\.transformer\.\d+\.1\.fn\.4"
     )
     model = get_peft_model(model, lora_config)
     for name, param in model.named_parameters():
         print(f"Layer: {name} with grads {param.requires_grad}")
-        if "borzoi" in name:  # TODO: If I ever use another backbone, need to replace
+        if "borzoi" in name:
             continue
         else:
             param.requires_grad = True # This sets the head params to training.
@@ -75,16 +65,12 @@ def set_lora(model):
 
 def get_model(args):
     if args.borzoi:
-        model_type = "borzoi"
-        if args.num_genom_feat > 0:
-            model = BorzoiOrogamiCTCF(mid_hidden=128, local=args.local, model_type=model_type)
-        else:
-            model = BorzoiOrogami(mid_hidden=128, local=args.local, model_type=model_type)
+        model = Chiron3D(mid_hidden=128, local=args.local)
     else:
         model = ConvTransModelSmall(mid_hidden=128, num_genomic_features=args.num_genom_feat)
 
     if args.use_groupnorm:
-        replace_bn_with_groupnorm(model)  # by referemce
+        replace_bn_with_groupnorm(model)
 
     if args.lora:
         model = set_lora(model)

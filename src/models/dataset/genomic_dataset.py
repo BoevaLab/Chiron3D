@@ -11,7 +11,7 @@ from src.models.dataset.augments import shift_aug, reverse_complement, gaussian_
 
 class GenomicDataset(Dataset):
     def __init__(self, regions_file_path, cool_file_path, fasta_dir, genomic_feature_path=None,
-                 mode="train", val_chroms=None, test_chroms=None, encode_motif="", use_pretrained_backbone=False, use_aug=False):
+                 mode="train", val_chroms=None, test_chroms=None, use_pretrained_backbone=False, use_aug=False):
         """
         Args:
             regions_file_path (str): Path to the .bed file with the genomic regions.
@@ -21,7 +21,6 @@ class GenomicDataset(Dataset):
             mode (str): One of "train", "val", "test" to specify the dataset mode.
             val_chroms (list, optional): List of chromosomes for validation. Defaults to None.
             test_chroms (list, optional): List of chromosomes for testing. Defaults to None.
-            encode_motif (str): Which motif to 1hot encode as input. Defaults to empty string (nothing gets encoded in that case).
             use_pretrained_backbone (bool): Whether to use Enformer/Borzoi for embeddings. Defaults to False.
         """
         self.regions_file_path = regions_file_path
@@ -38,7 +37,6 @@ class GenomicDataset(Dataset):
         self._chrom_set = set(self.cool.chromnames)
         self.filtered_regions = self._filter_regions_by_mode()
 
-        self.encode_motif = encode_motif
         self.use_aug = use_aug
         self.use_pretrained_backbone = use_pretrained_backbone
         self.dna_channels = 4 if use_pretrained_backbone else 5
@@ -90,15 +88,6 @@ class GenomicDataset(Dataset):
             return chrom[3:]
         raise KeyError(f"Chromosome '{chrom}' not found in cooler file. "
                        f"Available: {list(self._chrom_set)[:5]}…")
-
-    def _compute_motif_mask(self, sequence):
-        sequence = sequence.lower()
-        mask = np.zeros(len(sequence))
-        motif_length = len(self.encode_motif)
-        for i in range(len(sequence) - motif_length-1):
-            if sequence[i:i + motif_length] == self.encode_motif.lower():
-                mask[i] = 1  # Mark only the start position
-        return mask[np.newaxis, :]  # Shape: (1, len)
 
     def build_output(self, chrom, output):
         fasta = pyfaidx.Fasta(f"{self.fasta_dir}/{output['chr']}.fa")

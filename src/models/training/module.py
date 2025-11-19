@@ -110,32 +110,6 @@ class TrainModule(pl.LightningModule):
         loss = torch.tensor(step_outputs).mean()
         return {'loss': loss}
 
-    def get_cosine_schedule_with_warmup(self, optimizer, warmup_steps, total_steps, num_cycles=0.5, last_epoch=-1):
-        """
-        Create a schedule with a learning rate that decreases following the
-        values of the cosine function between 0 and `pi * num_cycles`
-        after a warmup period.
-
-        Args:
-            optimizer: (torch.optim.Optimizer)
-            warmup_steps: Number of steps for the warmup phase
-            total_steps: Total number of training steps
-            num_cycles: Cosine cycles in the decay (default 0.5, i.e. one half cosine)
-            last_epoch: PyTorch LR scheduler argument
-
-        Returns:
-            torch.optim.lr_scheduler.LambdaLR
-        """
-        def lr_lambda(current_step):
-            if current_step < warmup_steps:
-                # Linear warmup
-                return float(current_step) / float(max(1, warmup_steps))
-            # Cosine decay
-            progress = float(current_step - warmup_steps) / float(max(1, total_steps - warmup_steps))
-            return max(0.0, 0.5 * (1.0 + math.cos(math.pi * num_cycles * 2 * progress)))
-
-        return torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda, last_epoch)
-
     def configure_optimizers(self):
         params = get_learnable_params(self.model, weight_decay=0)
         optimizer = torch.optim.AdamW(params)
@@ -162,7 +136,7 @@ class TrainModule(pl.LightningModule):
             args.genom_feat_path = None  # Dont set it if num genomic features is 0
 
         use_pretrained_backbone = False
-        if args.enformer or args.borzoi:
+        if args.borzoi:
             use_pretrained_backbone = True
 
         dataset = GenomicDataset(
@@ -173,7 +147,6 @@ class TrainModule(pl.LightningModule):
             mode=mode,
             val_chroms=["chr5", "chr12", "chr13", "chr21"],
             test_chroms=["chr2", "chr6", "chr19"],
-            encode_motif=args.motif,
             use_pretrained_backbone=use_pretrained_backbone,
         )
 
