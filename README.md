@@ -13,9 +13,7 @@ This repository currently focuses on:
 
 Chiron3D is trained on CTCF HiChIP and matched CTCF ChIP-seq from the A673 wild-type Ewing sarcoma cell line on the hg19 reference genome.
 
-All preprocessed inputs required to run the scripts in this repository will be made available via Zenodo:
-
-TODO: add Zenodo DOI / URL here once uploaded.
+All preprocessed inputs required to run the scripts in this repository will be made available via Zenodo: https://zenodo.org/records/17655272?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImY5NTkzNWY3LTY3YzEtNGY1Ni1hZTRiLTA5MzVmMzg4Mjc4MyIsImRhdGEiOnt9LCJyYW5kb20iOiIxNDU4YjE2YmIxZDg0NjYyN2FjMjgzZjZkMmUzYjU3NSJ9.g895dn6RGbVtzIs351GTNvhYAfJZa8Tt4pKz1LRgP8KZwMMtEagMOWxr9CNJzXHSA2-NwcaEeAcSr64pODzizA
 
 ### Expected directory layout
 
