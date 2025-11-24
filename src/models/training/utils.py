@@ -1,7 +1,7 @@
 from torch import nn
 from peft import get_peft_model, LoraConfig
 from src.models.model.corigami_model import ConvTransModelSmall
-from src.models.model.chiron_model import Chiron3D, BorzoiOrogamiCTCF
+from src.models.model.chiron_model import Chiron3D
 
 
 def replace_bn_with_groupnorm(model):

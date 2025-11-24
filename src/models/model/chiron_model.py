@@ -3,9 +3,7 @@ import torch.nn as nn
 import src.models.model.blocks as blocks
 from borzoi_pytorch import Borzoi
 from borzoi_pytorch.config_borzoi import BorzoiConfig
-from einops import rearrange
 
-# TODO: Allow for borzoi paths
 
 def diagonalize_small(x):
     x_i = x.unsqueeze(2).repeat(1, 1, 105, 1)
@@ -19,9 +17,9 @@ def move_feature_forward(x):
 
 def get_borzoi_backbone(local: bool, model_type: str):
     assert model_type in ["borzoi", "flashzoi"], "Invalid model type. Choose 'borzoi' or 'flashzoi'."
-    cfg = BorzoiConfig.from_pretrained(f"../../data/{model_type}")
-    cfg.return_center_bins_only = False # forces 16,352 bins
-    borzoi = Borzoi.from_pretrained(f"../../data/{model_type}", config=cfg)
+    cfg = BorzoiConfig.from_pretrained(f"data/{model_type}")
+    cfg.return_center_bins_only = False # forces 16,352 bins 
+    borzoi = Borzoi.from_pretrained(f"data/{model_type}", config=cfg)
     return borzoi
 
 

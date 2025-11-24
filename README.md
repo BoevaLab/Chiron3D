@@ -13,7 +13,9 @@ This repository currently focuses on:
 
 Chiron3D is trained on CTCF HiChIP and matched CTCF ChIP-seq from the A673 wild-type Ewing sarcoma cell line on the hg19 reference genome.
 
-All preprocessed inputs required to run the scripts in this repository will be made available via Zenodo: https://zenodo.org/records/17655272?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImY5NTkzNWY3LTY3YzEtNGY1Ni1hZTRiLTA5MzVmMzg4Mjc4MyIsImRhdGEiOnt9LCJyYW5kb20iOiIxNDU4YjE2YmIxZDg0NjYyN2FjMjgzZjZkMmUzYjU3NSJ9.g895dn6RGbVtzIs351GTNvhYAfJZa8Tt4pKz1LRgP8KZwMMtEagMOWxr9CNJzXHSA2-NwcaEeAcSr64pODzizA
+All preprocessed inputs required to run the scripts in this repository will be made available via Zenodo:
+
+TODO: add Zenodo DOI / URL here once uploaded.
 
 ### Expected directory layout
 
@@ -23,11 +25,17 @@ After downloading and unpacking the Zenodo archive, the repository expects:
 data/
   A673_WT_CTCF_5000.cool      # 5 kb binned CTCF HiChIP contact map (hg19)
   windows_hg19.bed            # 524,288 bp windows tiled with 50 kb stride
+  chiron-model.ckpt           # pretrained checkpoint for evaluation only
   chromosomes/                # hg19 FASTA files per chromosome (e.g. chr1.fa, ...)
   ctcf/                       # CTCF feature tracks (ChIP-seq)
-  chiron-model.ckpt           # pretrained checkpoint for evaluation only
+  borzoi/                     # Borzoi model directory
 ```
 
 ## Training and evaluation
 
 There are two slurm scripts provided in the `scripts` directory: `model-evaluation.sh` and `model-training.sh`. For training, Chiron3D requires 4 × NVIDIA RTX 4090 or 3090 with 24GB of memory. Training takes about 20 hours. For evaluation, 1 × NVIDIA RTX 4090 or 3090 with 24GB finishes in 30 minutes.
+
+## Loop editing visualizations (before/after plots)
+
+To reproduce the before/after contact map plots for in silico loop edits (used in the figures), this repository provides the original and edited DNA sequences to explore in the `notebooks` folder.
+

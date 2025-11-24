@@ -46,7 +46,6 @@ def init_parser():
     p.add_argument('--num-genom-feat', dest='num_genom_feat', type=int, default=0)
     p.add_argument('--ckpt-path', required=True)
     p.add_argument('--borzoi', action='store_true')
-    p.add_argument('--out-dir', required=True)
     return p.parse_args()
 
 
@@ -54,7 +53,6 @@ def main():
     args = init_parser()
     if args.num_genom_feat == 0:
         args.genomic_feature_path = None
-    os.makedirs(args.out_dir, exist_ok=True)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(args.borzoi)

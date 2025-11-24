@@ -50,11 +50,11 @@ def insulation_corr(pred, target):
     m = np.isfinite(pred_insu) & np.isfinite(targ_insu)
 
     if m.sum() < 2:   
-        return np.nan, np.nan, np.nan, np.nan
+        return np.nan, np.nan
 
     rp, _ = pearsonr(pred_insu[m], targ_insu[m])
     rs, _ = spearmanr(pred_insu[m], targ_insu[m])
-    return float(rp), float(rs), pred_insu[m], targ_insu[m]
+    return float(rp), float(rs)
 
 def distance_stratified_correlation(pred, target, xs, ys):
     pears, spears = [], []

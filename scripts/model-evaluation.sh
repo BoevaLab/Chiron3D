@@ -10,18 +10,18 @@
 source ~/.bashrc
 conda activate chiron
 
+cd /cluster/work/boeva/shoenig/Chiron3D
+
 pip install -e .
 
-cd src/models/evaluation
+REGIONS_FILE="data/windows_hg19.bed"
+COOL_FILE="data/A673_WT_CTCF_5000.cool"
+GENOME_FEAT_PATH="data/ctcf"
+FASTA_DIR_HG19="data/chromosomes"
+CKPT_PATH="data/chiron-model.ckpt" 
+NUM_GENOM_FEAT=0
 
-REGIONS_FILE="../../data/windows_hg19.bed"
-COOL_FILE="../../data/A673_WT_CTCF_5000.cool"
-OUTDIR="/cluster/work/boeva/shoenig/ews-ml/model_evals"
-GENOME_FEAT_PATH="../../data/ctcf"
-FASTA_DIR_HG19="../../data/chromosomes"
-CKPT_PATH="../../data/chiron-model.ckpt" 
-
-python3 evaluation.py \
+python3 -m src.models.evaluation.evaluation \
   --regions-file $REGIONS_FILE \
   --fasta-dir $FASTA_DIR_HG19 \
   --cool-file $COOL_FILE \

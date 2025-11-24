@@ -17,8 +17,10 @@ conda activate chiron
 pip install pandas cooler pyfaidx pyBigWig
 pip install lightning lightning-bolts
 pip install torch torchvision torchaudio
-pip install matplotlib captum modisco-lite peft einops ipympl enformer_pytorch borzoi-pytorch
-
+pip install \
+  "transformers==4.50.0" \
+  "peft==0.17.0" \
+  matplotlib captum modisco-lite einops ipympl enformer_pytorch borzoi-pytorch
 
 echo "Installation complete!"
 
