@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from ledidi import ledidi
 from src.ledidi.custom_pruning import greedy_pruning, PruningConfig
 from src.ledidi.utils import col_to_base, make_intra_loop_mask
-from src.ledidi.wrappers import StripeWrapper, RatioWrapper, HiChIPStripeAndCorner
+from src.ledidi.wrappers import StripeWrapper, RatioWrapper, StripeAndCornerWrapper
 from src.ledidi.losses import stripe_diff_loss, ratio_inverted_ballpark_loss, make_extruding_to_stable_loss, make_stable_to_extruding_loss
 
 
@@ -165,22 +165,23 @@ def evaluate_asym_to_sym(
 
     with torch.no_grad():
         m0 = core_model(X)
-        sum_x0 = m0[:, i, i + ignore_k : j].sum(dim=-1).item()
-        sum_y0 = m0[:, i : j - ignore_k, j - 1].sum(dim=-1).item()
+
+        mean_x0 = m0[:, i, i + ignore_k : j].mean(dim=-1).item()
+        mean_y0 = m0[:, i : j - ignore_k, j - 1].mean(dim=-1).item()
 
     wrapper = StripeWrapper(
         core_model, i, j,
         stripe=stripe,
-        base_sum_x=sum_x0,
-        base_sum_y=sum_y0,
+        base_sum_x=mean_x0,
+        base_sum_y=mean_y0,
     ).to(device)
 
     # dynamic target band
     with torch.no_grad():
         if stripe == "X":
-            dynamic_thresh = 0.3 * sum_x0
+            dynamic_thresh = 0.3 * mean_x0
         else:
-            dynamic_thresh = 0.3 * sum_y0
+            dynamic_thresh = 0.3 * mean_y0
 
         y_hat = wrapper(X)
         diff = float(y_hat.item())
@@ -194,7 +195,7 @@ def evaluate_asym_to_sym(
         return
 
     ledidi_kwargs = dict(
-        l=0.08,
+        l=0.02,
         tau=1.0,
         max_iter=1500,
         early_stopping_iter=1200,
@@ -305,7 +306,7 @@ def evaluate_stable_to_extruding(
         print("unmappable stripe; skipping.")
         return
 
-    wrapper = HiChIPStripeAndCorner(core_model, i, j).to(device)
+    wrapper = StripeAndCornerWrapper(core_model, i, j).to(device)
     with torch.no_grad():
         y0 = wrapper(X).squeeze(0)
     corner0 = float(y0[0].item())
@@ -367,7 +368,7 @@ def evaluate_extruding_to_stable(
     with torch.no_grad():
         base_m = core_model(X).detach()
 
-    wrapper = HiChIPStripeAndCorner(core_model, i, j, base_m=base_m).to(device)
+    wrapper = StripeAndCornerWrapper(core_model, i, j, base_m=base_m).to(device)
     with torch.no_grad():
         y0 = wrapper(X).squeeze(0)
     corner0 = float(y0[0].item())

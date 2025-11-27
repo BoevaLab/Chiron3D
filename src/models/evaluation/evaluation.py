@@ -65,6 +65,9 @@ def main():
     use_pretrained_backbone = bool(args.borzoi)
     corigami_model = not bool(args.borzoi) # clip C.Origami preds for comparison
 
+    overall_mse = []
+    overall_pearson = []
+    overall_spearman = []
     for chrom in ["chr2", "chr6", "chr19"]:
         ds = GenomicDataset(
             regions_file_path=args.regions_file,
@@ -130,6 +133,18 @@ def main():
             diag_x=xs,
             diag_y=ys,
         )
+        overall_mse.extend(mse_list)
+        overall_pearson.extend(insu_pearson_list)
+        overall_spearman.exnted(insu_spearman_list)
+
+    overall_mse = np.asarray(overall_mse, dtype=float)
+    overall_pearson = np.asarray(overall_pearson, dtype=float)
+    overall_spearman = np.asarray(overall_spearman, dtype=float)
+
+    print(f"Overall MSE      mean={overall_mse.mean():.4f}  std={overall_mse.std():.4f}")
+    print(f"Overall Pearson  mean={overall_pearson.mean():.4f}  std={overall_pearson.std():.4f}")
+    print(f"Overall Spearman mean={overall_spearman.mean():.4f}  std={overall_spearman.std():.4f}")
+
 
 if __name__ == "__main__":
     main()

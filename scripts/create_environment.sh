@@ -16,7 +16,7 @@ conda activate chiron
 
 pip install pandas cooler pyfaidx pyBigWig
 pip install lightning lightning-bolts
-pip install torch torchvision torchaudio
+pip install torch torchvision torchaudio ledidi
 pip install \
   "transformers==4.50.0" \
   "peft==0.17.0" \

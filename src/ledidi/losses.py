@@ -48,5 +48,5 @@ def stripe_diff_loss(y_hat, thresh: float = 10):
     Zero loss while |y_hat| ≤ thresh.
     Quadratic penalty once we leave that band.
     """
-    overshoot = torch.clamp(y_hat.abs() - thresh, min=0.0)
+    overshoot = torch.clamp(y_hat.abs() - thresh, min=0.0) * 10
     return (overshoot ** 2).mean()
