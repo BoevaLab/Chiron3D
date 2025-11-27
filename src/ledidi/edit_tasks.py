@@ -299,7 +299,6 @@ def evaluate_stable_to_extruding(
     device: str,
     run_dir: str,
     pruning_threshold: float = 0.35,
-    max_initial_edits: int = 250,
 ) -> None:
     elem, seq_orig, X, i, j = prepare_loop(elem, device)
     if has_unmappable_stripe(elem["sequence"]):
@@ -342,7 +341,6 @@ def evaluate_stable_to_extruding(
         input_mask=input_mask,
         score_fn=ratio_score_stable_to_extr,
         pruning_cfg=pruning_cfg,
-        max_initial_edits=max_initial_edits,
     )
     if seq_final is None:
         return
