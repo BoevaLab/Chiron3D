@@ -365,10 +365,7 @@ def evaluate_extruding_to_stable(
         print("unmappable stripe; skipping.")
         return
 
-    with torch.no_grad():
-        base_m = core_model(X).detach()
-
-    wrapper = StripeAndCornerWrapper(core_model, i, j, base_m=base_m).to(device)
+    wrapper = StripeAndCornerWrapper(core_model, i, j).to(device)
     with torch.no_grad():
         y0 = wrapper(X).squeeze(0)
     corner0 = float(y0[0].item())
