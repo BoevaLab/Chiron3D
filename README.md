@@ -22,18 +22,40 @@ After downloading and unpacking the Zenodo archive, the repository expects:
 ```
 data/
   A673_WT_CTCF_5000.cool      # 5 kb binned CTCF HiChIP contact map (hg19)
-  windows_hg19.bed            # 524,288 bp windows tiled with 50 kb stride
-  chiron-model.ckpt           # pretrained checkpoint for evaluation only
+  borzoi/                     # Weights of backbone from borzoi-pytorch
+  chiron-model.ckpt           # pretrained checkpoint for evaluation + downstream 
   chromosomes/                # hg19 FASTA files per chromosome (e.g. chr1.fa, ...)
-  ctcf/                       # CTCF feature tracks (ChIP-seq)
-  borzoi/                     # Borzoi model directory
+  ctcf/                       # CTCF feature track (ChIP-seq)
+  extruding_loops.csv         # Dataset of extruding loops classified by Tweed
+  stable_loops.csv            # Dataset of stable loops classified by FitHiChIP
+  windows_hg19.bed            # 524,288 bp windows tiled with 50 kb stride
 ```
+
+## Setup
+
+Download and unpack the Zenodo archive and have the following layout in the top level directory.
+
+```
+data/
+  A673_WT_CTCF_5000.cool      # 5 kb binned CTCF HiChIP contact map (hg19)
+  borzoi/                     # Weights of backbone from borzoi-pytorch
+  chiron-model.ckpt           # pretrained checkpoint for evaluation + downstream 
+  chromosomes/                # hg19 FASTA files per chromosome (e.g. chr1.fa, ...)
+  ctcf/                       # CTCF feature track (ChIP-seq)
+  extruding_loops.csv         # Dataset of extruding loops classified by Tweed
+  stable_loops.csv            # Dataset of stable loops classified by FitHiChIP
+  windows_hg19.bed            # 524,288 bp windows tiled with 50 kb stride
+```
+
+Create a conda environment and install all required packages. For a SLURM-cluster, there is an install script already provided in `scripts/create_environment.sh`. Please note the specific requirements of  `transformers==4.50.0` and `peft==0.17.0`.
 
 ## Training and evaluation
 
-There are two slurm scripts provided in the `scripts` directory: `model-evaluation.sh` and `model-training.sh`. For training, Chiron3D requires 4 × NVIDIA RTX 4090 or 3090 with 24GB of memory. Training takes about 20 hours. For evaluation, 1 × NVIDIA RTX 4090 or 3090 with 24GB finishes in 30 minutes.
+There are two slurm scripts provided in the `scripts` directory: `model-evaluation.sh` and `model-training.sh`. For training, Chiron3D requires 4 × NVIDIA RTX 4090 or 3090 with 24GB of memory. Training takes about one day. For evaluation (across three test chromosomes), 1 × NVIDIA RTX 4090 or 3090 with 24GB finishes in 30 minutes.
 
-## Loop editing visualizations (before/after plots)
+## Downstream Task: Loop editing
 
-To reproduce the before/after contact map plots for in silico loop edits (used in the figures), this repository provides the original and edited DNA sequences to explore in the `notebooks` folder.
+The `notebooks` folder showcases four examples of using the ledidi-based editing framework to suggest in silico edits. The outputs of the runs can be viewed in the respective notebook and the corresponding `example` folders. Please note, that the package must be installed in editable mode by running `pip install -e .` for all paths to work. On our SLURM cluster, the following command is used to run from within the `notebooks` directory: 
+
+`srun --job-name jupyter -p gpu --gres=gpu:rtx4090:1 --time 01:00:00 --cpus-per-task 16 --mem 128G bash -c 'source ~/.bashrc && conda activate chiron && cd /path/to/main/folder/Chiron3D && pip install -e . && cd notebooks && jupyter lab --ip $(hostname -i) --no-browser'`. 
 
