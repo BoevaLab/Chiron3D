@@ -15,22 +15,6 @@ Chiron3D is trained on CTCF HiChIP and matched CTCF ChIP-seq from the A673 wild-
 
 All preprocessed inputs required to run the scripts in this repository are made available via [Zenodo](https://zenodo.org/records/17655272?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImY5NTkzNWY3LTY3YzEtNGY1Ni1hZTRiLTA5MzVmMzg4Mjc4MyIsImRhdGEiOnt9LCJyYW5kb20iOiIxNDU4YjE2YmIxZDg0NjYyN2FjMjgzZjZkMmUzYjU3NSJ9.g895dn6RGbVtzIs351GTNvhYAfJZa8Tt4pKz1LRgP8KZwMMtEagMOWxr9CNJzXHSA2-NwcaEeAcSr64pODzizA).
 
-### Expected directory layout
-
-After downloading and unpacking the Zenodo archive, the repository expects:
-
-```
-data/
-  A673_WT_CTCF_5000.cool      # 5 kb binned CTCF HiChIP contact map (hg19)
-  borzoi/                     # Weights of backbone from borzoi-pytorch
-  chiron-model.ckpt           # pretrained checkpoint for evaluation + downstream 
-  chromosomes/                # hg19 FASTA files per chromosome (e.g. chr1.fa, ...)
-  ctcf/                       # CTCF feature track (ChIP-seq)
-  extruding_loops.csv         # Dataset of extruding loops classified by Tweed
-  stable_loops.csv            # Dataset of stable loops classified by FitHiChIP
-  windows_hg19.bed            # 524,288 bp windows tiled with 50 kb stride
-```
-
 ## Setup
 
 Download and unpack the Zenodo archive and have the following layout in the top level directory.
