@@ -71,7 +71,7 @@ def main():
     for chrom in ["chr2", "chr6", "chr19"]:
         ds = GenomicDataset(
             regions_file_path=args.regions_file,
-            cool_file_path=f"/cluster/work/boeva/shoenig/ews-ml/data/A673_general/smoothed_hic/smooth_75_hic_{chrom}.cool", #args.cool_file,
+            cool_file_path=args.cool_file,
             fasta_dir=args.fasta_dir,
             genomic_feature_path=args.genomic_feature_path,
             mode="test",
@@ -96,8 +96,8 @@ def main():
                 test_input = torch.cat((test_input, genom_feat), dim=1)
 
             with torch.no_grad():
-                output = model(test_input)  
-                output = torch.clamp(output, min=0) 
+                output = model(test_input)
+                output = torch.clamp(output, min=0)
 
             for out, true in zip(output, batch["matrix"]):
                 out = out.cpu()  # Move output to CPU
@@ -120,9 +120,9 @@ def main():
                 dist_strat_spearman_list.append(dist_s)
 
 
-        dist_p_mat = np.asarray(dist_strat_pearson_list, dtype=float)  
+        dist_p_mat = np.asarray(dist_strat_pearson_list, dtype=float)
         dist_s_mat = np.asarray(dist_strat_spearman_list, dtype=float)
-        
+
         np.savez_compressed(
             os.path.join(f"metrics_{chrom}.npz"),
             insu_pearson=np.asarray(insu_pearson_list, float),
@@ -135,11 +135,27 @@ def main():
         )
         overall_mse.extend(mse_list)
         overall_pearson.extend(insu_pearson_list)
-        overall_spearman.exnted(insu_spearman_list)
+        overall_spearman.extend(insu_spearman_list)
+
+        mse_arr = np.asarray(mse_list, dtype=float)
+        pearson_arr = np.asarray(insu_pearson_list, dtype=float)
+        spearman_arr = np.asarray(insu_spearman_list, dtype=float)
+
+        mse_arr = mse_arr[np.isfinite(mse_arr)]
+        pearson_arr = pearson_arr[np.isfinite(pearson_arr)]
+        spearman_arr = spearman_arr[np.isfinite(spearman_arr)]
+
+        print(f"{chrom} MSE      mean={mse_arr.mean():.4f}  std={mse_arr.std():.4f}")
+        print(f"{chrom} Pearson  mean={pearson_arr.mean():.4f}  std={pearson_arr.std():.4f}")
+        print(f"{chrom} Spearman mean={spearman_arr.mean():.4f}  std={spearman_arr.std():.4f}")
 
     overall_mse = np.asarray(overall_mse, dtype=float)
     overall_pearson = np.asarray(overall_pearson, dtype=float)
     overall_spearman = np.asarray(overall_spearman, dtype=float)
+
+    overall_mse = overall_mse[np.isfinite(overall_mse)]
+    overall_pearson = overall_pearson[np.isfinite(overall_pearson)]
+    overall_spearman = overall_spearman[np.isfinite(overall_spearman)]
 
     print(f"Overall MSE      mean={overall_mse.mean():.4f}  std={overall_mse.std():.4f}")
     print(f"Overall Pearson  mean={overall_pearson.mean():.4f}  std={overall_pearson.std():.4f}")
