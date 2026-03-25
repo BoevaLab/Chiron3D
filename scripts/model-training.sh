@@ -15,20 +15,18 @@ fi
 
 # Activate conda
 source ~/.bashrc
-conda activate chiron
+conda activate ENV_NAME_HERE
 
 # Check env
 echo
 echo "which python"
 which python
 
+cd /ABSOLUTE/PATH/TO/PROJECT/ROOT/Chiron3D
 pip install -e .
 
 cd src/models/training
 pwd
-
-CONFIG_FILE="/cluster/work/boeva/shoenig/ews-ml/config/config.sh"
-source "$CONFIG_FILE"
 
 SEED=2077
 FLAG=$(echo "$1" | sed 's/^--//')
@@ -55,8 +53,6 @@ NUM_GPU=4
 BATCH_SIZE=4
 DDP_DISABLED="--ddp-disabled"
 NUM_WORKERS=16
-
-MOTIF=""  # Change this to any motif you want to use, empty string for no extra channel
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 # Run the Python script with the arguments

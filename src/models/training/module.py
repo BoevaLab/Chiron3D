@@ -16,9 +16,7 @@ class TrainModule(pl.LightningModule):
         self.model = get_model(args)
         self.args = args
         self.save_hyperparameters()
-        self.length_dataset = self.get_dataset(args, mode="train").__len__()
         self._last_preview_epoch = -1
-        print(f"[DEBUG] Length of the train dataset: {self.length_dataset}")
 
     def forward(self, x):
         return self.model(x)
@@ -28,7 +26,7 @@ class TrainModule(pl.LightningModule):
 
         if "features" in batch:
             inputs = torch.cat((inputs, batch["features"]), dim=1)  # TODO: Check this works with COrigami model too.
-       
+
         return inputs, batch["matrix"]
 
     def on_validation_epoch_start(self):
@@ -41,7 +39,7 @@ class TrainModule(pl.LightningModule):
             for out, true in zip(outputs, mats):
                 out_c = out.detach().to(torch.float32).cpu()
                 true_c = true.detach().to(torch.float32).cpu()
-                r_pearsons, r_spearmans = insulation_corr(out_c, true_c)  
+                r_pearsons, r_spearmans = insulation_corr(out_c, true_c)
 
                 if store == "val":
                     if r_pearsons:
@@ -88,7 +86,7 @@ class TrainModule(pl.LightningModule):
         ret_metrics = self._shared_epoch_end(step_outputs)
 
         metrics = {
-            'train_loss': ret_metrics['loss'] * 8, 
+            'train_loss': ret_metrics['loss'] * 8,
         }
 
         self.log_dict(metrics, prog_bar=True)
@@ -124,7 +122,7 @@ class TrainModule(pl.LightningModule):
 
         scheduler_config = {
             'scheduler': scheduler,
-            'interval': 'epoch',  
+            'interval': 'epoch',
             'frequency': 1,
             'monitor': 'val_loss',
             'strict': True,

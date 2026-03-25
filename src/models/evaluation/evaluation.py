@@ -68,6 +68,7 @@ def main():
     overall_mse = []
     overall_pearson = []
     overall_spearman = []
+    print('Regions file:', args.regions_file)
     for chrom in ["chr2", "chr6", "chr19"]:
         ds = GenomicDataset(
             regions_file_path=args.regions_file,

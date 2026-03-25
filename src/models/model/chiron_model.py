@@ -3,6 +3,7 @@ import torch.nn as nn
 import src.models.model.blocks as blocks
 from borzoi_pytorch import Borzoi
 from borzoi_pytorch.config_borzoi import BorzoiConfig
+from pathlib import Path
 
 
 def diagonalize_small(x):
@@ -17,15 +18,19 @@ def move_feature_forward(x):
 
 def get_borzoi_backbone(local: bool, model_type: str):
     assert model_type in ["borzoi", "flashzoi"], "Invalid model type. Choose 'borzoi' or 'flashzoi'."
-    cfg = BorzoiConfig.from_pretrained(f"data/{model_type}")
-    cfg.return_center_bins_only = False # forces 16,352 bins
-    borzoi = Borzoi.from_pretrained(f"data/{model_type}", config=cfg)
+
+    repo_root = Path(__file__).resolve().parents[3]
+    model_dir = repo_root / "data" / model_type
+
+    cfg = BorzoiConfig.from_pretrained(str(model_dir))
+    cfg.return_center_bins_only = False
+    borzoi = Borzoi.from_pretrained(str(model_dir), config=cfg)
     return borzoi
 
 
 class Chiron3D(nn.Module):
 
-    def __init__(self, mid_hidden=128, local=False, model_type="borzoi"):
+    def __init__(self, mid_hidden=128, local=True, model_type="borzoi"):
         super().__init__()
 
         self.borzoi = get_borzoi_backbone(local, model_type)

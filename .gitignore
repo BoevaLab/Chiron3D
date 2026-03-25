@@ -6,3 +6,6 @@ data/
 *.txt
 !requirements.txt
 __pycache__/
+
+scripts/model-evaluation-*.sh
+scripts/model-training-*.sh
