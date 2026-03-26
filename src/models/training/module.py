@@ -39,13 +39,14 @@ class TrainModule(pl.LightningModule):
             for out, true in zip(outputs, mats):
                 out_c = out.detach().to(torch.float32).cpu()
                 true_c = true.detach().to(torch.float32).cpu()
-                r_pearsons, r_spearmans = insulation_corr(out_c, true_c)
+
+                r_pearson, r_spearman = insulation_corr(out_c, true_c)
 
                 if store == "val":
-                    if r_pearsons:
-                        self._val_pearsons.extend([float(r) for r in r_pearsons if not np.isnan(r)])
-                    if r_spearmans:
-                        self._val_spearmans.extend([float(r) for r in r_spearmans if not np.isnan(r)])
+                    if not np.isnan(r_pearson):
+                        self._val_pearsons.append(float(r_pearson))
+                    if not np.isnan(r_spearman):
+                        self._val_spearmans.append(float(r_spearman))
 
     def training_step(self, batch, batch_idx):
         inputs, mat = self.proc_batch(batch)
