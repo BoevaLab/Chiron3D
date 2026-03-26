@@ -25,9 +25,6 @@ which python
 cd /ABSOLUTE/PATH/TO/PROJECT/ROOT/Chiron3D
 pip install -e .
 
-cd src/models/training
-pwd
-
 SEED=2077
 FLAG=$(echo "$1" | sed 's/^--//')
 echo "Using flag: $FLAG"
@@ -35,10 +32,10 @@ echo "Using flag: $FLAG"
 # Save path
 SAVE_PATH="checkpoints"
 
-REGIONS_FILE="../../data/windows_hg19.bed"
-COOL_FILE="../../data/A673_WT_CTCF_5000.cool"
-GENOME_FEAT_PATH="../../data/ctcf"
-FASTA_DIR_HG19="../../data/chromosomes"
+REGIONS_FILE="data/windows_hg19.bed"
+COOL_FILE="data/A673_WT_CTCF_5000.cool"
+GENOME_FEAT_PATH="data/ctcf"
+FASTA_DIR_HG19="data/chromosomes"
 
 # Model parameters
 NUM_GENOM_FEAT=0
@@ -56,7 +53,7 @@ NUM_WORKERS=16
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 # Run the Python script with the arguments
-python3 train.py \
+python3 -m src.models.training.train \
   --seed $SEED \
   --save_path $SAVE_PATH \
   --regions-file $REGIONS_FILE \
