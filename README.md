@@ -8,7 +8,7 @@ This repository currently focuses on:
 
 - Evaluating trained checkpoints and reproducing the main quantitative and qualitative results from the figures
 
-## Pipeline
+## Overview of proposed pipeline
 <img width="1584" height="881" alt="Fig1" src="https://github.com/user-attachments/assets/0c198842-cf0a-40c3-b78b-3c75a9f3a6e8" />
 
 ## Data
