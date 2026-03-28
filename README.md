@@ -102,7 +102,9 @@ In on our experiments, we used 4 × NVIDIA RTX 4090 or 3090 with 24GB of memory 
 
 ## Downstream Task: Loop editing
 
-The `notebooks` folder showcases four examples of using the ledidi-based editing framework to suggest in silico edits. The outputs of the runs can be viewed in the respective notebook and the corresponding `example` folders. Please note, that the package must be installed in editable mode by running `pip install -e .` for all paths to work. On our SLURM cluster, the following command is used to run from within the `notebooks` directory:
+The `notebooks` folder showcases four examples of using the ledidi-based editing framework to suggest in silico edits. The outputs of the runs can be viewed in the respective notebook and the corresponding `example` folders. Make sure to activate the environment and start jupyter from the notebooks folder.
+
+On our SLURM cluster, the following command is used to run from within the `notebooks` directory:
 
 `srun --job-name jupyter -p gpu --gres=gpu:rtx4090:1 --time 01:00:00 --cpus-per-task 16 --mem 128G bash -c 'source ~/.bashrc && conda activate chiron && cd /path/to/main/folder/Chiron3D && pip install -e . && cd notebooks && jupyter lab --ip $(hostname -i) --no-browser'`.
 
