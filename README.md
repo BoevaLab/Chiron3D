@@ -98,7 +98,7 @@ These scripts are examples for our internal cluster setup and may need adaptatio
 
 ### GPU configuration
 
-In on our experiments, we used 4 × NVIDIA RTX 4090 or 3090 with 24GB of memory for training. Convergence then takes about one day. For evaluation (across three test chromosomes), 1 × NVIDIA RTX 4090 or 3090 with 24GB completes within an hour.
+In on our experiments, we used 4 × NVIDIA RTX 4090 or 3090 with 24GB of memory for training. Training to convergence takes about a day. For evaluation (across three test chromosomes), 1 × NVIDIA RTX 4090 or 3090 with 24GB completes within an hour.
 
 ## Downstream Task: Loop editing
 
