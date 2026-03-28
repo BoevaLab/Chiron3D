@@ -56,17 +56,13 @@ pip install -e .
 
 Please note the specific requirements of  `transformers==4.50.0` and `peft==0.17.0`.
 
-All commands below are intended to be run from the repository root.
-
 ---
 
 ## Training and evaluation
 
-Chiron3D can be run directly from the command line. The SLURM scripts in `scripts/` are optional wrappers for cluster usage.
+Chiron3D can be run directly from the command line. All commands below are intended to be run from the repository root.
 
 ### Training from the command line
-
-Run training from the repository root with:
 
 For a full run on 4 GPUs to replicate training results, run the following command:
 ```bash
