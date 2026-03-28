@@ -42,8 +42,6 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-Please note the specific requirements of  `transformers==4.50.0` and `peft==0.17.0`.
-
 ---
 
 ## Training and evaluation
