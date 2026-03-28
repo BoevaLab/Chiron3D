@@ -8,6 +8,8 @@ This repository currently focuses on:
 
 - Evaluating trained checkpoints and reproducing the main quantitative and qualitative results from the figures
 
+## Pipeline
+<img width="1584" height="881" alt="Fig1" src="https://github.com/user-attachments/assets/0c198842-cf0a-40c3-b78b-3c75a9f3a6e8" />
 
 ## Data
 
@@ -120,3 +122,22 @@ The `notebooks` folder showcases four examples of using the ledidi-based editing
 
 `srun --job-name jupyter -p gpu --gres=gpu:rtx4090:1 --time 01:00:00 --cpus-per-task 16 --mem 128G bash -c 'source ~/.bashrc && conda activate chiron && cd /path/to/main/folder/Chiron3D && pip install -e . && cd notebooks && jupyter lab --ip $(hostname -i) --no-browser'`.
 
+
+## Citation
+```md
+If you use this repository, please cite our preprint:
+
+Hoenig, S., Grover, A., Neri, P., Surdez, D., & Boeva, V. (2026).
+*Chiron3D: an interpretable deep learning framework for understanding the DNA code of chromatin looping*.
+bioRxiv. https://doi.org/10.64898/2026.03.20.713211
+```
+
+```bibtex
+@article{hoenig2026chiron3d,
+  title   = {Chiron3D: an interpretable deep learning framework for understanding the DNA code of chromatin looping},
+  author  = {Hoenig, Sebastian and Grover, Aayush and Neri, Piero and Surdez, Delphine and Boeva, Virginie},
+  journal = {bioRxiv},
+  year    = {2026},
+  doi     = {10.64898/2026.03.20.713211}
+}
+```
