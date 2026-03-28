@@ -88,7 +88,7 @@ This prints the best checkpoint path at the end of training.
 
 ### Evaluation
 
-The zenodo download already comes with a pre-trained model. To replicate our evaluation results, or run another trained model checkpoint, run the following command after inserting the appropiate checkpoint location.
+The Zenodo link already contains a pre-trained model. To replicate our evaluation results, or run another trained model checkpoint, run the following command after inserting the appropiate checkpoint location.
 
 ```bash
 python3 -m src.models.evaluation.evaluation \
