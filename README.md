@@ -110,9 +110,8 @@ On our SLURM cluster, the following command is used to run from within the `note
 
 
 ## Citation
-```md
 If you use this repository, please cite our preprint:
-
+```md
 Hoenig, S., Grover, A., Neri, P., Surdez, D., & Boeva, V. (2026).
 *Chiron3D: an interpretable deep learning framework for understanding the DNA code of chromatin looping*.
 bioRxiv. https://doi.org/10.64898/2026.03.20.713211
