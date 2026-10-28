@@ -110,20 +110,23 @@ On our SLURM cluster, the following command is used to run from within the `note
 
 
 ## Citation
-If you use this repository, please cite our preprint:
+If you use this repository, please cite our work:
 ```md
-Hoenig, S., Grover, A., Neri, P., Surdez, D., & Boeva, V. (2026).
-*Chiron3D: an interpretable deep learning framework for understanding the DNA code of chromatin looping*.
-bioRxiv. https://doi.org/10.64898/2026.03.20.713211
+Hönig, S., Grover, A., Neri, P., Surdez, D., & Boeva, V. (2026).
+Chiron3D: an interpretable deep learning framework for understanding the DNA code of chromatin looping.
+Bioinformatics, 42(Supplement_2), btag492. https://doi.org/10.1093/bioinformatics/btag492
 ```
 
 Bibtex: 
 ```bibtex
 @article{hoenig2026chiron3d,
+  author  = {H{\"o}nig, Sebastian and Grover, Aayush and Neri, Piero and Surdez, Didier and Boeva, Valentina},
   title   = {Chiron3D: an interpretable deep learning framework for understanding the DNA code of chromatin looping},
-  author  = {Hoenig, Sebastian and Grover, Aayush and Neri, Piero and Surdez, Delphine and Boeva, Virginie},
-  journal = {bioRxiv},
+  journal = {Bioinformatics},
+  volume  = {42},
+  number  = {Supplement\_2},
+  pages   = {btag492},
   year    = {2026},
-  doi     = {10.64898/2026.03.20.713211}
+  doi     = {10.1093/bioinformatics/btag492}
 }
 ```
